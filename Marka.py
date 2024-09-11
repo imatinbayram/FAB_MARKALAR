@@ -80,7 +80,7 @@ hesabat_sutunlar = st.sidebar.multiselect(
 SELECT_AY_BAS, SELECT_AY_SON  = st.sidebar.select_slider(
     'Aylar',
     options=hesabat_aylar,
-    value=(hesabat_aylar[0], hesabat_aylar[-1]),
+    value=(hesabat_aylar[len(hesabat_aylar)//2], hesabat_aylar[-1]),
 )
 
 

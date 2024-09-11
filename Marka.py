@@ -19,8 +19,6 @@ bazarlama_region = [
 'SEKI'
 ]
 
-bazarlama_qol = ['Elektrik']
-
 hesabat_aylar = ['Yanvar','Fevral','Mart','Aprel','May','İyun', 'İyul', 'Avqust']
 markalar_mallar_sutunlar = ['ANA_QRUP',	'ALT_QRUP',	'MAL_QRUP', 'STOK_AD']
 #Sehifenin nastroykasi
@@ -30,14 +28,14 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
-        'About': "# FAB Bazarlama \n Bu hesabat FAB şirkətlər qrupunun Bazarlama bölməsi üçün hazırlanmışdır."
+        'About': "# FAB Markalar \n Bu hesabat FAB şirkətlər qrupu üçün hazırlanmışdır."
     }
 )
 
 #Excel melumati oxuyuruq
 @st.cache_data
 def load_data():
-    data = pd.read_excel('MarkalarData.xlsx')
+    data = pd.read_excel('BazarlamaData.xlsx')
     markalar_mallar = pd.read_excel('MarkalarMallar.xlsx')
     return data, markalar_mallar
 
@@ -48,7 +46,10 @@ if res_button:
 with st.spinner('Məlumatlar yüklənir...'):
     data, markalar_mallar = load_data()
 
+#Musteri adi ve stok adi drop edirik
+data = data.drop(['C_AD','S_AD'], axis=1)
 
+#sidebarda istifade etmek ucun listler yaradiriq
 bazarlama_qol_list = markalar_mallar['QOL'].unique()
 ana_qrup_list = markalar_mallar['ANA_QRUP'].unique()
 alt_qrup_list = markalar_mallar['ALT_QRUP'].unique()
@@ -67,15 +68,15 @@ else:
 show_marka_check = st.sidebar.toggle("Bütün markalar")
 if show_marka_check:
     SELECT_MARKA = 'Bütün markalar'
+    hesabat_sutunlar = []
 else:
     SELECT_MARKA = st.sidebar.selectbox('Marka', sorted(marka_qrup_list),
                                         label_visibility='visible')
-
-hesabat_sutunlar = st.sidebar.multiselect(
-    "Məlumatlar",
-    markalar_mallar_sutunlar,
-    placeholder = 'Əlavə məlumatlar'
-)
+    hesabat_sutunlar = st.sidebar.multiselect(
+        "Məlumatlar",
+        markalar_mallar_sutunlar,
+        placeholder = 'Əlavə məlumatlar'
+    )
 
 SELECT_AY_BAS, SELECT_AY_SON  = st.sidebar.select_slider(
     'Aylar',
@@ -86,10 +87,10 @@ SELECT_AY_BAS, SELECT_AY_SON  = st.sidebar.select_slider(
 
 #sidebara gore melumatlari filterletirik
 if SELECT_REGION == 'Bütün regionlar üzrə':
-    region_group_data = data.drop(['REGION'], axis=1)
-    region_select_data = region_group_data.groupby('STOK_KOD').sum().reset_index()
+    region_select_data = data.drop(['GROUP'], axis=1).groupby(['C_KOD','S_KOD'], as_index=False).sum().reset_index()
 else:
-    region_select_data = data[(data['REGION']==SELECT_REGION)]
+    region_select_data = data[(data['GROUP']==SELECT_REGION)]
+    region_select_data = region_select_data.drop(['GROUP'], axis=1)
 
 if SELECT_MARKA == 'Bütün markalar':
     select_marka_mallar = markalar_mallar
@@ -102,17 +103,22 @@ start_index = hesabat_aylar.index(SELECT_AY_BAS)
 end_index = hesabat_aylar.index(SELECT_AY_SON)
 SELECT_AYLAR = hesabat_aylar[start_index:end_index + 1]
 
+
 #sidebara gore secilen mallarin excelini yaradiqi
-select_marka_data = pd.merge(select_marka_mallar, region_select_data, on='STOK_KOD', how='left')
-select_marka_data.fillna(0, inplace=True)
+region_marka_merge_data = pd.merge(select_marka_mallar, region_select_data,
+                                   left_on='STOK_KOD', right_on='S_KOD', how='left')
+select_marka_data = region_marka_merge_data[['MARKA','C_KOD']+hesabat_sutunlar+SELECT_AYLAR]
+select_marka_data[SELECT_AYLAR] = select_marka_data[SELECT_AYLAR].applymap(lambda x: np.nan if pd.isna(x) or x <= 0 else x)
+select_marka_data_sum = select_marka_data.groupby(['MARKA','C_KOD']+hesabat_sutunlar, as_index=False)[SELECT_AYLAR].count()
+select_marka_data_sum[SELECT_AYLAR] = select_marka_data_sum[SELECT_AYLAR].applymap(lambda x: np.nan if pd.isna(x) or x <= 0 else x)
+select_marka_data_count = select_marka_data_sum.groupby(['MARKA']+hesabat_sutunlar, as_index=False)[SELECT_AYLAR].count()
 
-# Gorsenecek sutunlari yaratmaq
-final_sutunlar = ['MARKA']+hesabat_sutunlar+SELECT_AYLAR
-select_marka_group_data = select_marka_data[['MARKA']+hesabat_sutunlar+SELECT_AYLAR]
-hesabat_table = select_marka_group_data.groupby(['MARKA']+hesabat_sutunlar).sum().reset_index()
-
+#son hesabat cedveli yaranir
+hesabat_table = select_marka_data_count
+#indexi 1den basladiriq
 hesabat_table.index = np.arange(1, len(hesabat_table)+1)
 
+#cedvelde numeric columlar heatmap ucun
 numeric_columns = hesabat_table.select_dtypes(include=[float, int]).columns
 
 # Cedvelin reqemlerini formatini duzeltmek ucun
@@ -121,7 +127,6 @@ def accounting_format(x):
         return '0'
     else:
         return f'{x:,.0f}'.replace(',', ' ')
-
 styled_hesabat_table = hesabat_table.style.format({ay: accounting_format for ay in SELECT_AYLAR})
 
 # Heatmap yaratmaq

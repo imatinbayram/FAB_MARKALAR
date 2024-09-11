@@ -184,7 +184,7 @@ css_page = """
     }
     
     th{
-       color:black;
+       color: black;
        font-weight: bold;
     }
     

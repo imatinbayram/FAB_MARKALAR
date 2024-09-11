@@ -3,6 +3,48 @@ import pandas as pd
 import numpy as np
 from io import BytesIO
 
+css_page = """
+<style>
+
+    th {
+       color: black;
+       font-weight: bold;
+    }
+        
+    .stSlider [data-testid="stTickBar"] {
+        display: none;
+    }
+    .stSlider label {
+        display: block;
+        text-align: left;
+    }
+    
+    .stSelectbox label {
+        text-align: left;
+        display: block;
+        width: 100%;
+    }
+
+    [data-testid="stHeader"] {
+        display: none;
+    }
+    
+    [class="viewerBadge_link__qRIco"] {
+        display: none;
+    }
+    
+    [data-testid="stElementToolbar"] {
+        display: none;
+    }
+    
+    button[title="View fullscreen"] {
+        visibility: hidden;
+    }
+    
+</style>
+"""
+
+st.markdown(css_page, unsafe_allow_html=True)
 
 bazarlama_region = [
 'BAKI 1',
@@ -155,46 +197,3 @@ styled_hesabat_table = styled_hesabat_table.applymap(color_cells, subset=numeric
 st.header(f'{SELECT_REGION} - {SELECT_MARKA}', divider='rainbow', anchor=False)
 
 st.table(styled_hesabat_table)
-
-css_page = """
-<style>
-
-    th {
-       color: black;
-       font-weight: bold;
-    }
-        
-    .stSlider [data-testid="stTickBar"] {
-        display: none;
-    }
-    .stSlider label {
-        display: block;
-        text-align: left;
-    }
-    
-    .stSelectbox label {
-        text-align: left;
-        display: block;
-        width: 100%;
-    }
-
-    [data-testid="stHeader"] {
-        display: none;
-    }
-    
-    [class="viewerBadge_link__qRIco"] {
-        display: none;
-    }
-    
-    [data-testid="stElementToolbar"] {
-        display: none;
-    }
-    
-    button[title="View fullscreen"] {
-        visibility: hidden;
-    }
-    
-</style>
-"""
-
-st.markdown(css_page, unsafe_allow_html=True)

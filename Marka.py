@@ -122,6 +122,9 @@ def accounting_format(x):
 
 styled_hesabat_table = hesabat_table.style.format({ay: accounting_format for ay in SELECT_AYLAR})
 
+#Sehifenin adini tablari duzeldirik
+st.header(f'{SELECT_REGION} - {SELECT_MARKA}', divider='rainbow', anchor=False)
+
 st.table(styled_hesabat_table)
 
 css_page = """

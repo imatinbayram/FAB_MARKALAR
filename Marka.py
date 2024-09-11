@@ -143,11 +143,11 @@ def color_cells(val):
     
     # Choose color based on the normalized value
     if norm_val < 0.33:  # Lower third
-        return f'background-color: rgba(255, 99, 99, {norm_val + 0.33})'  # Light red
+        return f'background-color: rgba(255,165,0, {norm_val + 0.33})'  # Light red
     elif 0.33 <= norm_val <= 0.66:  # Middle third
-        return f'background-color: rgba(255, 255, 99, {norm_val})'  # Yellow
+        return f'background-color: rgba(255,140,0, {norm_val})'  # Yellow
     else:  # Upper third
-        return f'background-color: rgba(102, 255, 102, {norm_val})'  # Green
+        return f'background-color: rgba(255,69,0, {norm_val})'  # Green
 
 styled_hesabat_table = styled_hesabat_table.applymap(color_cells, subset=numeric_columns)
 
@@ -178,9 +178,7 @@ css_page = """
         width: 100%;
     }
 
-    [data-testid="stHeader"] {
-        display: none;
-    }
+
     
     [class="viewerBadge_link__qRIco"] {
         display: none;

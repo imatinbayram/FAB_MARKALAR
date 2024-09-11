@@ -183,6 +183,11 @@ css_page = """
         visibility: hidden;
     }
     
+    th{
+       color:black;
+       font-weight: bold;
+    }
+    
 </style>
 """
 

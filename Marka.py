@@ -113,14 +113,38 @@ hesabat_table = select_marka_group_data.groupby(['MARKA']+hesabat_sutunlar).sum(
 
 hesabat_table.index = np.arange(1, len(hesabat_table)+1)
 
+numeric_columns = hesabat_table.select_dtypes(include=[float, int]).columns
+
 # Cedvelin reqemlerini formatini duzeltmek ucun
 def accounting_format(x):
     if x == 0:
-        return ' '
+        return '0'
     else:
         return f'{x:,.0f}'.replace(',', ' ')
 
 styled_hesabat_table = hesabat_table.style.format({ay: accounting_format for ay in SELECT_AYLAR})
+
+# Heatmap yaratmaq
+def color_cells(val):
+    if not isinstance(val, (int, float)):
+        return ''
+    
+    # Get the min and max values for the entire DataFrame
+    min_val = hesabat_table[numeric_columns].min().min()
+    max_val = hesabat_table[numeric_columns].max().max()
+    
+    # Normalize value between 0 and 1
+    norm_val = (val - min_val) / (max_val - min_val) if max_val != min_val else 0
+    
+    # Choose color based on the normalized value
+    if norm_val < 0.33:  # Lower third
+        return f'background-color: rgba(255, 99, 99, {norm_val + 0.33})'  # Light red
+    elif 0.33 <= norm_val <= 0.66:  # Middle third
+        return f'background-color: rgba(255, 255, 99, {norm_val})'  # Yellow
+    else:  # Upper third
+        return f'background-color: rgba(102, 255, 102, {norm_val})'  # Green
+
+styled_hesabat_table = styled_hesabat_table.applymap(color_cells, subset=numeric_columns)
 
 #Sehifenin adini tablari duzeldirik
 st.header(f'{SELECT_REGION} - {SELECT_MARKA}', divider='rainbow', anchor=False)

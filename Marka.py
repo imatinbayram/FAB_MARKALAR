@@ -63,7 +63,7 @@ if show_region_check:
     SELECT_REGION = 'Bütün regionlar üzrə'
 else:
     SELECT_REGION = st.sidebar.selectbox('Region', sorted(bazarlama_region),
-                                        label_visibility='collapsed')
+                                        label_visibility='visible')
     
 show_marka_check = st.sidebar.toggle("Bütün markalar")
 if show_marka_check:
@@ -71,12 +71,11 @@ if show_marka_check:
     hesabat_sutunlar = []
 else:
     SELECT_MARKA = st.sidebar.selectbox('Marka', sorted(marka_qrup_list),
-                                        label_visibility='collapsed')
+                                        label_visibility='visible')
     hesabat_sutunlar = st.sidebar.multiselect(
         "Məlumatlar",
         markalar_mallar_sutunlar,
-        placeholder = 'Əlavə məlumatlar',
-        label_visibility='collapsed'
+        placeholder = 'Əlavə məlumatlar'
     )
 
 SELECT_AY_BAS, SELECT_AY_SON  = st.sidebar.select_slider(
@@ -144,16 +143,16 @@ def color_cells(val):
     
     # Choose color based on the normalized value
     if norm_val < 0.33:  # Lower third
-        return f'background-color: rgba(255,165,0, {norm_val + 0.33})'  # Light red
+        return f'background-color: rgba(255,165,0, {norm_val + 0.33})'  # Low
     elif 0.33 <= norm_val <= 0.66:  # Middle third
-        return f'background-color: rgba(255,140,0, {norm_val})'  # Yellow
+        return f'background-color: rgba(255,140,0, {norm_val})'  # Mid
     else:  # Upper third
-        return f'background-color: rgba(255,69,0, {norm_val})'  # Green
+        return f'background-color: rgba(255,69,0, {norm_val})'  # High
 
 styled_hesabat_table = styled_hesabat_table.applymap(color_cells, subset=numeric_columns)
 
 #Sehifenin adini tablari duzeldirik
-st.header(f'{SELECT_REGION} - {SELECT_MARKA}', divider='grey', anchor=False)
+st.header(f'{SELECT_REGION} - {SELECT_MARKA}', divider='rainbow', anchor=False)
 
 st.table(styled_hesabat_table)
 

@@ -4,3 +4,4 @@ showErrorDetails = false
 [theme]
 base="light"
 textColor="#000000"
+primaryColor="#000000"

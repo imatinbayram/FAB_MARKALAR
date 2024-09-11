@@ -153,6 +153,12 @@ st.table(styled_hesabat_table)
 
 css_page = """
 <style>
+
+    th {
+       color: black;
+       font-weight: bold;
+    }
+        
     .stSlider [data-testid="stTickBar"] {
         display: none;
     }
@@ -181,11 +187,6 @@ css_page = """
     
     button[title="View fullscreen"] {
         visibility: hidden;
-    }
-    
-    th{
-       color: black;
-       font-weight: bold;
     }
     
 </style>

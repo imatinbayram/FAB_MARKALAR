@@ -63,7 +63,7 @@ if show_region_check:
     SELECT_REGION = 'Bütün regionlar üzrə'
 else:
     SELECT_REGION = st.sidebar.selectbox('Region', sorted(bazarlama_region),
-                                        label_visibility='visible')
+                                        label_visibility='collapsed')
     
 show_marka_check = st.sidebar.toggle("Bütün markalar")
 if show_marka_check:
@@ -71,11 +71,12 @@ if show_marka_check:
     hesabat_sutunlar = []
 else:
     SELECT_MARKA = st.sidebar.selectbox('Marka', sorted(marka_qrup_list),
-                                        label_visibility='visible')
+                                        label_visibility='collapsed')
     hesabat_sutunlar = st.sidebar.multiselect(
         "Məlumatlar",
         markalar_mallar_sutunlar,
-        placeholder = 'Əlavə məlumatlar'
+        placeholder = 'Əlavə məlumatlar',
+        label_visibility='collapsed'
     )
 
 SELECT_AY_BAS, SELECT_AY_SON  = st.sidebar.select_slider(
@@ -152,7 +153,7 @@ def color_cells(val):
 styled_hesabat_table = styled_hesabat_table.applymap(color_cells, subset=numeric_columns)
 
 #Sehifenin adini tablari duzeldirik
-st.header(f'{SELECT_REGION} - {SELECT_MARKA}', divider='rainbow', anchor=False)
+st.header(f'{SELECT_REGION} - {SELECT_MARKA}', divider='grey', anchor=False)
 
 st.table(styled_hesabat_table)
 

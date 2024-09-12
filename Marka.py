@@ -216,7 +216,9 @@ css_page = """
         width: 100%;
     }
 
-
+    [data-testid="stHeader"] {
+        display: none;
+    }
     
     [class="viewerBadge_link__qRIco"] {
         display: none;

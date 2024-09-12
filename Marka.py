@@ -139,7 +139,6 @@ hesabat_table = select_marka_data_final
 hesabat_table.index = np.arange(1, len(hesabat_table)+1)
 
 #cedvelde numeric columlar heatmap ucun
-#numeric_columns = hesabat_table.select_dtypes(include=[float, int]).columns
 numeric_columns = SELECT_AYLAR.copy()
 numeric_columns.remove('CƏMİ')
 SELECT_AYLAR_FORMAT = []
@@ -165,30 +164,28 @@ def color_cells(val):
     if not isinstance(val, (int, float)):
         return ''
     
-    # Get the min and max values for the entire DataFrame
+    # aylar uzre min max musteri sayi
     min_val = hesabat_table[numeric_columns].min().min()
     max_val = hesabat_table[numeric_columns].max().max()
     
-    # Normalize value between 0 and 1
+    # rengin alpha deyerini hesabla
     norm_val = (val - min_val) / (max_val - min_val) if max_val != min_val else 0
     
-    # Choose color based on the normalized value
-    if norm_val < 0.33:  # Lower third
-        return f'background-color: rgba(255,165,0, {norm_val + 0.33})'  # Low
-    elif 0.33 <= norm_val <= 0.66:  # Middle third
-        return f'background-color: rgba(255,140,0, {norm_val})'  # Mid
-    else:  # Upper third
-        return f'background-color: rgba(255,69,0, {norm_val})'  # High
+    # setire ve aylara gore renglendir
+    if norm_val < 0.33:  # Asagi
+        return f'background-color: rgba(255,165,0, {norm_val + 0.33})'  # Asagi
+    elif 0.33 <= norm_val <= 0.66:  # Orta
+        return f'background-color: rgba(255,140,0, {norm_val})'  # Orta
+    else:  # Yuksek
+        return f'background-color: rgba(255,69,0, {norm_val})'  # Yuksek
 
 styled_hesabat_table = styled_hesabat_table.applymap(color_cells, subset=numeric_columns)
 
-# Define a function to highlight the 'SUM' column cells
+# CEMİ sutununu qirmizi reng elemek
 def highlight_sum_col(val, col_name):
     if col_name == 'CƏMİ':
         return 'background-color: red'
     return ''
-
-# Apply the styling function
 styled_hesabat_table = styled_hesabat_table.applymap(lambda x: highlight_sum_col(x, 'CƏMİ'), subset=['CƏMİ'])
 
 #Sehifenin adini tablari duzeldirik
@@ -236,4 +233,4 @@ css_page = """
 </style>
 """
 
-#st.markdown(css_page, unsafe_allow_html=True)
+st.markdown(css_page, unsafe_allow_html=True)

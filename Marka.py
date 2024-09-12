@@ -173,18 +173,18 @@ def color_cells(val):
     
     # setire ve aylara gore renglendir
     if norm_val < 0.33:  # Asagi
-        return f'background-color: rgba(255,165,0, {norm_val + 0.33})'  # Asagi
+        return f'background-color: rgba(178,34,34, {norm_val + 0.33})'  # Asagi
     elif 0.33 <= norm_val <= 0.66:  # Orta
-        return f'background-color: rgba(255,140,0, {norm_val})'  # Orta
+        return f'background-color: rgba(165,42,42, {norm_val})'  # Orta
     else:  # Yuksek
-        return f'background-color: rgba(255,69,0, {norm_val})'  # Yuksek
+        return f'background-color: rgba(128,0,0, {norm_val})'  # Yuksek
 
 styled_hesabat_table = styled_hesabat_table.applymap(color_cells, subset=numeric_columns)
 
 # CEMİ sutununu qirmizi reng elemek
 def highlight_sum_col(val, col_name):
     if col_name == 'CƏMİ':
-        return 'background-color: red'
+        return 'background-color: #990000'
     return ''
 styled_hesabat_table = styled_hesabat_table.applymap(lambda x: highlight_sum_col(x, 'CƏMİ'), subset=['CƏMİ'])
 

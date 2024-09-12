@@ -108,26 +108,57 @@ SELECT_AYLAR = hesabat_aylar[start_index:end_index + 1]
 region_marka_merge_data = pd.merge(select_marka_mallar, region_select_data,
                                    left_on='STOK_KOD', right_on='S_KOD', how='left')
 select_marka_data = region_marka_merge_data[['MARKA','C_KOD']+hesabat_sutunlar+SELECT_AYLAR]
+select_marka_data['CƏMİ'] = select_marka_data[SELECT_AYLAR].sum(axis=1)
+SELECT_AYLAR = SELECT_AYLAR + ['CƏMİ']
 select_marka_data[SELECT_AYLAR] = select_marka_data[SELECT_AYLAR].applymap(lambda x: np.nan if pd.isna(x) or x <= 0 else x)
 select_marka_data_sum = select_marka_data.groupby(['MARKA','C_KOD']+hesabat_sutunlar, as_index=False)[SELECT_AYLAR].count()
+select_marka_data_sum_mebleg = select_marka_data.groupby(['MARKA','C_KOD']+hesabat_sutunlar, as_index=False)[SELECT_AYLAR].sum()
 select_marka_data_sum[SELECT_AYLAR] = select_marka_data_sum[SELECT_AYLAR].applymap(lambda x: np.nan if pd.isna(x) or x <= 0 else x)
 select_marka_data_count = select_marka_data_sum.groupby(['MARKA']+hesabat_sutunlar, as_index=False)[SELECT_AYLAR].count()
+select_marka_data_count_mebleg = select_marka_data_sum_mebleg.groupby(['MARKA']+hesabat_sutunlar, as_index=False)[SELECT_AYLAR].sum()
+
+if 'STOK_AD' in select_marka_data_count.columns:
+    select_marka_data_count_qiymet = pd.merge(select_marka_data_count, markalar_mallar[['STOK_AD','QİYMƏT']], 
+                                       on='STOK_AD', how='left')
+    select_marka_data_count_qiymet = select_marka_data_count_qiymet[['MARKA']+hesabat_sutunlar+['QİYMƏT']+SELECT_AYLAR]
+    select_marka_data_count_qiymet['QİYMƏT'] = select_marka_data_count_qiymet['QİYMƏT'].astype(str)+' ₼'
+    select_marka_data_final = pd.merge(select_marka_data_count_qiymet, select_marka_data_count_mebleg,
+                                      on=['MARKA']+hesabat_sutunlar, how='left', suffixes=('', '_SATIŞ')) 
+    hesabat_sutunlar = hesabat_sutunlar + ['QİYMƏT']
+else:
+    select_marka_data_count_qiymet = select_marka_data_count
+    
+    select_marka_data_final = pd.merge(select_marka_data_count_qiymet, select_marka_data_count_mebleg,
+                                      on=['MARKA']+hesabat_sutunlar, how='left', suffixes=('', '_SATIŞ'))  
+
+#select_marka_data_final = select_marka_data_count_qiymet
 
 #son hesabat cedveli yaranir
-hesabat_table = select_marka_data_count
+hesabat_table = select_marka_data_final
 #indexi 1den basladiriq
 hesabat_table.index = np.arange(1, len(hesabat_table)+1)
 
 #cedvelde numeric columlar heatmap ucun
-numeric_columns = hesabat_table.select_dtypes(include=[float, int]).columns
+#numeric_columns = hesabat_table.select_dtypes(include=[float, int]).columns
+numeric_columns = SELECT_AYLAR.copy()
+numeric_columns.remove('CƏMİ')
+SELECT_AYLAR_FORMAT = []
+for ay in [ay+'_SATIŞ' for ay in SELECT_AYLAR]:
+    SELECT_AYLAR_FORMAT.append(ay)
+
+aylar_order = merged_list = [item for pair in zip(SELECT_AYLAR, SELECT_AYLAR_FORMAT) for item in pair]
+
+reordered_columns = ['MARKA']+hesabat_sutunlar+aylar_order
+hesabat_table = hesabat_table[reordered_columns]
 
 # Cedvelin reqemlerini formatini duzeltmek ucun
 def accounting_format(x):
     if x == 0:
-        return '0'
+        return '0 ₼'
     else:
-        return f'{x:,.0f}'.replace(',', ' ')
-styled_hesabat_table = hesabat_table.style.format({ay: accounting_format for ay in SELECT_AYLAR})
+        return f'{x:,.0f} ₼'.replace(',', ' ')
+    
+styled_hesabat_table = hesabat_table.style.format({ay: accounting_format for ay in SELECT_AYLAR_FORMAT})
 
 # Heatmap yaratmaq
 def color_cells(val):
@@ -151,10 +182,20 @@ def color_cells(val):
 
 styled_hesabat_table = styled_hesabat_table.applymap(color_cells, subset=numeric_columns)
 
+# Define a function to highlight the 'SUM' column cells
+def highlight_sum_col(val, col_name):
+    if col_name == 'CƏMİ':
+        return 'background-color: red'
+    return ''
+
+# Apply the styling function
+styled_hesabat_table = styled_hesabat_table.applymap(lambda x: highlight_sum_col(x, 'CƏMİ'), subset=['CƏMİ'])
+
 #Sehifenin adini tablari duzeldirik
 st.header(f'{SELECT_REGION} - {SELECT_MARKA}', divider='rainbow', anchor=False)
 
 st.table(styled_hesabat_table)
+
 
 css_page = """
 <style>
@@ -195,4 +236,4 @@ css_page = """
 </style>
 """
 
-st.markdown(css_page, unsafe_allow_html=True)
+#st.markdown(css_page, unsafe_allow_html=True)

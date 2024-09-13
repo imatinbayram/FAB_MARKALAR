@@ -173,7 +173,7 @@ def color_cells(val):
     
     # setire ve aylara gore renglendir
     if norm_val < 0.33:  # Asagi
-        return f'background-color: rgba(165,42,42, {norm_val})'  # Asagi
+        return f'background-color: rgba(165,42,42, {norm_val}+0,11)'  # Asagi
     elif 0.33 <= norm_val <= 0.66:  # Orta
         return f'background-color: rgba(178,34,34, {norm_val})'  # Orta
     else:  # Yuksek

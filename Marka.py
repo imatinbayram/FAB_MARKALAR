@@ -84,6 +84,10 @@ SELECT_AY_BAS, SELECT_AY_SON  = st.sidebar.select_slider(
     options=hesabat_aylar,
     value=(hesabat_aylar[len(hesabat_aylar)//2], hesabat_aylar[-1]),
 )
+# =============================================================================
+# show_satilan = st.sidebar.toggle("Satılan müştərilər")
+# =============================================================================
+show_satilmayan = st.sidebar.toggle("Satılmayan müştərilər")
 
 
 #sidebara gore melumatlari filterletirik
@@ -235,14 +239,16 @@ try:
    )
    
    st.table(styled_hesabat_table)
-   
-   with st.expander('Satılan müştərilərin siyahısı'):
-       st.write(f':red[{satis_sayi}] müştəriyə ümumilikdə ', f':red[{satis_cemi:,.0f}]'.replace(',', ' '),' :red[AZN] satış olmuşdur.')
-       st.table(styled_hesabat_table_cari)
-
-   with st.expander('Satılmayan müştərilərin siyahısı'):
-       st.write(f':red[{satilamayan_sayi}] müştəriyə satış olmamışdır.')
-       st.table(satilmayan_cariler)
+# =============================================================================
+#    if show_satilan:
+#        with st.expander('Satılan müştərilərin siyahısı'):
+#            st.write(f':red[{satis_sayi}] müştəriyə ümumilikdə ', f':red[{satis_cemi:,.0f}]'.replace(',', ' '),' :red[AZN] satış olmuşdur.')
+#            st.table(styled_hesabat_table_cari)
+# =============================================================================
+   if show_satilmayan:
+       with st.expander('Satılmayan müştərilərin siyahısı'):
+           st.write(f':red[{satilamayan_sayi}] müştəriyə satış olmamışdır.')
+           st.table(satilmayan_cariler)
 
 except:
     st.error('Məlumatlar yenilənmişdir. Zəhmət olmasa sol üstə yerləşən "Məlumatları Yenilə" düyməsinə basın.')

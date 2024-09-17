@@ -220,7 +220,20 @@ try:
     
    #Sehifenin adini tablari duzeldirik
    st.header(f'{SELECT_REGION} - {SELECT_MARKA}', divider='rainbow', anchor=False)
-
+   
+   #Fayli excele yuklemek
+   output = BytesIO()
+   with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+       hesabat_table.to_excel(writer, index=False, sheet_name='Ümumi')
+       hesabat_table_cari.to_excel(writer, index=False, sheet_name='Satılan carilər')
+       satilmayan_cariler.to_excel(writer, index=False, sheet_name='Satılmayan carilər')
+   excel_data = output.getvalue()
+   st.download_button(
+       label=":green[Cədvəli Excel'ə yüklə] :floppy_disk:",
+       data=excel_data,
+       file_name=f'{SELECT_REGION} - {SELECT_MARKA}.xlsx',
+   )
+   
    st.table(styled_hesabat_table)
    
    with st.expander('Satılan müştərilərin siyahısı'):

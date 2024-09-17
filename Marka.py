@@ -37,14 +37,15 @@ st.set_page_config(
 def load_data():
     data = pd.read_excel('BazarlamaData.xlsx')
     markalar_mallar = pd.read_excel('MarkalarMallar.xlsx')
-    return data, markalar_mallar
+    cariler = pd.read_excel('Cariler.xlsx')
+    return data, markalar_mallar, cariler
 
 #Melumat yenilemek ucun knopka
 res_button = st.sidebar.button(':red[🗘 Məlumatları Yenilə]')
 if res_button:
     st.cache_data.clear()
 with st.spinner('Məlumatlar yüklənir...'):
-    data, markalar_mallar = load_data()
+    data, markalar_mallar, cariler = load_data()
 
 #Musteri adi ve stok adi drop edirik
 data = data.drop(['C_AD','S_AD'], axis=1)
@@ -88,9 +89,11 @@ SELECT_AY_BAS, SELECT_AY_SON  = st.sidebar.select_slider(
 #sidebara gore melumatlari filterletirik
 if SELECT_REGION == 'Bütün regionlar üzrə':
     region_select_data = data.drop(['GROUP'], axis=1).groupby(['C_KOD','S_KOD'], as_index=False).sum().reset_index()
+    region_select_cariler = cariler
 else:
     region_select_data = data[(data['GROUP']==SELECT_REGION)]
     region_select_data = region_select_data.drop(['GROUP'], axis=1)
+    region_select_cariler = cariler[(cariler['GROUP']==SELECT_REGION)]
 
 if SELECT_MARKA == 'Bütün markalar':
     select_marka_mallar = markalar_mallar
@@ -117,6 +120,28 @@ select_marka_data_sum[SELECT_AYLAR] = select_marka_data_sum[SELECT_AYLAR].applym
 select_marka_data_count = select_marka_data_sum.groupby(['MARKA']+hesabat_sutunlar, as_index=False)[SELECT_AYLAR].count()
 select_marka_data_count_mebleg = select_marka_data_sum_mebleg.groupby(['MARKA']+hesabat_sutunlar, as_index=False)[SELECT_AYLAR].sum()
 
+#cariler uzre cixaris
+select_marka_data_count_mebleg_cari = select_marka_data_sum_mebleg.groupby(['MARKA','C_KOD']+hesabat_sutunlar, as_index=False)[SELECT_AYLAR].sum()
+select_marka_data_count_mebleg_cari = select_marka_data_count_mebleg_cari[select_marka_data_count_mebleg_cari['CƏMİ']!=0]
+#cari adini getirmer
+select_marka_data_final_cari_ad = pd.merge(select_marka_data_count_mebleg_cari, region_select_cariler[['C_KOD','C_AD']], 
+                                   on='C_KOD', how='left')
+select_marka_data_final_cari = select_marka_data_final_cari_ad
+
+#son cari cedvelinin yaranması
+hesabat_table_cari = select_marka_data_final_cari
+reordered_columns_cariler = ['MARKA','C_KOD','C_AD']+hesabat_sutunlar+SELECT_AYLAR
+hesabat_table_cari = hesabat_table_cari[reordered_columns_cariler]
+hesabat_table_cari.index = np.arange(1, len(hesabat_table_cari)+1)
+satis_cemi = hesabat_table_cari['CƏMİ'].sum()
+satis_sayi = hesabat_table_cari['C_KOD'].nunique()
+
+#satilmiyan carileri secmek
+satilan_cariler = hesabat_table_cari['C_KOD'].unique().tolist()
+satilmayan_cariler = region_select_cariler[~region_select_cariler['C_KOD'].isin(satilan_cariler)]
+satilmayan_cariler.index = np.arange(1, len(satilmayan_cariler)+1)
+satilamayan_sayi = satilmayan_cariler['C_KOD'].nunique()
+    
 if 'STOK_AD' in select_marka_data_count.columns:
     select_marka_data_count_qiymet = pd.merge(select_marka_data_count, markalar_mallar[['STOK_AD','QİYMƏT']], 
                                        on='STOK_AD', how='left')
@@ -153,11 +178,13 @@ hesabat_table = hesabat_table[reordered_columns]
 # Cedvelin reqemlerini formatini duzeltmek ucun
 def accounting_format(x):
     if x == 0:
-        return '0 ₼'
+        return ' '
     else:
         return f'{x:,.0f} ₼'.replace(',', ' ')
     
 styled_hesabat_table = hesabat_table.style.format({ay: accounting_format for ay in SELECT_AYLAR_FORMAT})
+
+styled_hesabat_table_cari = hesabat_table_cari.style.format({ay: accounting_format for ay in SELECT_AYLAR})
 
 # Heatmap yaratmaq
 def color_cells(val):
@@ -188,12 +215,26 @@ def highlight_sum_col(val, col_name):
     return ''
 styled_hesabat_table = styled_hesabat_table.applymap(lambda x: highlight_sum_col(x, 'CƏMİ'), subset=['CƏMİ'])
 
-#Sehifenin adini tablari duzeldirik
-st.header(f'{SELECT_REGION} - {SELECT_MARKA}', divider='rainbow', anchor=False)
+#Error mesajin qarsisini aliriq
+try:
+    
+   #Sehifenin adini tablari duzeldirik
+   st.header(f'{SELECT_REGION} - {SELECT_MARKA}', divider='rainbow', anchor=False)
 
-st.table(styled_hesabat_table)
+   st.table(styled_hesabat_table)
+   
+   with st.expander('Satılan müştərilərin siyahısı'):
+       st.write(f':red[{satis_sayi}] müştəriyə ümumilikdə ', f':red[{satis_cemi:,.0f}]'.replace(',', ' '),' :red[AZN] satış olmuşdur.')
+       st.table(styled_hesabat_table_cari)
 
+   with st.expander('Satılmayan müştərilərin siyahısı'):
+       st.write(f':red[{satilamayan_sayi}] müştəriyə satış olmamışdır.')
+       st.table(satilmayan_cariler)
 
+except:
+    st.error('Məlumatlar yenilənmişdir. Zəhmət olmasa sol üstə yerləşən "Məlumatları Yenilə" düyməsinə basın.')
+    
+    
 css_page = """
 <style>
 

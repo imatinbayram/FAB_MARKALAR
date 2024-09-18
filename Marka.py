@@ -4,6 +4,49 @@ import numpy as np
 from io import BytesIO
 import hmac
 
+css_page = """
+<style>
+
+    th {
+       color: black;
+       font-weight: bold;
+    }
+        
+    .stSlider [data-testid="stTickBar"] {
+        display: none;
+    }
+    .stSlider label {
+        display: block;
+        text-align: left;
+    }
+    
+    .stSelectbox label {
+        text-align: left;
+        display: block;
+        width: 100%;
+    }
+
+    [data-testid="stHeader"] {
+        display: none;
+    }
+    
+    [class="viewerBadge_link__qRIco"] {
+        display: none;
+    }
+    
+    [data-testid="stElementToolbar"] {
+        display: none;
+    }
+    
+    button[title="View fullscreen"] {
+        visibility: hidden;
+    }
+    
+</style>
+"""
+
+st.markdown(css_page, unsafe_allow_html=True)
+
 login_username = [
 'Admin',
 'BAKI_1',
@@ -305,47 +348,3 @@ try:
 
 except:
     st.error('Məlumatlar yenilənmişdir. Zəhmət olmasa sol üstə yerləşən "Məlumatları Yenilə" düyməsinə basın.')
-    
-    
-css_page = """
-<style>
-
-    th {
-       color: black;
-       font-weight: bold;
-    }
-        
-    .stSlider [data-testid="stTickBar"] {
-        display: none;
-    }
-    .stSlider label {
-        display: block;
-        text-align: left;
-    }
-    
-    .stSelectbox label {
-        text-align: left;
-        display: block;
-        width: 100%;
-    }
-
-    [data-testid="stHeader"] {
-        display: none;
-    }
-    
-    [class="viewerBadge_link__qRIco"] {
-        display: none;
-    }
-    
-    [data-testid="stElementToolbar"] {
-        display: none;
-    }
-    
-    button[title="View fullscreen"] {
-        visibility: hidden;
-    }
-    
-</style>
-"""
-
-st.markdown(css_page, unsafe_allow_html=True)

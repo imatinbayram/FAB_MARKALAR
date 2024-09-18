@@ -2,7 +2,57 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from io import BytesIO
+import hmac
 
+login_username = [
+'Admin',
+'BAKI_1',
+'BAKI_2',
+'BAKI_3',
+'BAKI_4',
+'BAKI_5',
+'GENCE1',
+'GENCE2',
+'GOYCAY',
+'QUBA',
+'LENKERAN',
+'SABIRABAD',
+'SEKI'
+    ]
+
+def check_password():
+
+    def login_form():
+        with st.form("FAB Markalar"):
+            LOGIN_REGION = st.selectbox('Region', sorted(login_username), label_visibility='visible')
+            st.text_input("Şifrə", type="password", key="password")
+            st.form_submit_button("Daxil ol", on_click=password_entered)
+        return LOGIN_REGION
+
+    def password_entered():
+        if st.session_state["username"] in st.secrets[
+            "passwords"
+        ] and hmac.compare_digest(
+            st.session_state["password"],
+            st.secrets.passwords[st.session_state["username"]],
+        ):
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]
+            del st.session_state["username"]
+        else:
+            st.session_state["password_correct"] = False
+            
+    if st.session_state.get("password_correct", False):
+        return True
+
+    login_form()
+    if "password_correct" in st.session_state:
+        st.error("Şifrə düzgün daxil edilməyib!")
+    return False
+
+
+if not check_password():
+    st.stop()
 
 bazarlama_region = [
 'BAKI 1',
@@ -59,12 +109,15 @@ marka_qrup_list = markalar_mallar['MARKA'].unique()
 
 
 #sidebar secimleri
-show_region_check = st.sidebar.toggle("Bütün regionlar üzrə")
-if show_region_check:
-    SELECT_REGION = 'Bütün regionlar üzrə'
+if LOGIN_REGION == 'Admin':
+    show_region_check = st.sidebar.toggle("Bütün regionlar üzrə")
+    if show_region_check:
+        SELECT_REGION = 'Bütün regionlar üzrə'
+    else:
+        SELECT_REGION = st.sidebar.selectbox('Region', sorted(bazarlama_region),
+                                            label_visibility='visible')
 else:
-    SELECT_REGION = st.sidebar.selectbox('Region', sorted(bazarlama_region),
-                                        label_visibility='visible')
+    SELECT_REGION = LOGIN_REGION
     
 show_marka_check = st.sidebar.toggle("Bütün markalar")
 if show_marka_check:

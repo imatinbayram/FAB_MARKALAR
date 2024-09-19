@@ -63,7 +63,7 @@ def check_password():
                 st.session_state['logged_in'] = True
                 st.session_state['login_region'] = username_region
                 st.success("Giriş edilir...")
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("Şifrə düzgün deyil!")           
 
@@ -75,7 +75,7 @@ if not st.session_state['logged_in']:
 if st.sidebar.button(':blue[:arrow_left: ÇIXIŞ]'):
     st.session_state['logged_in'] = False
     st.session_state['login_region'] = ''
-    st.experimental_rerun()  # Refresh the page to show the login form again
+    st.rerun()  # Refresh the page to show the login form again
 
 bazarlama_region = [
 'BAKI 1',

@@ -361,6 +361,8 @@ css_page = """
     }
     
 </style>
+<title>FAB MARKALAR</title>
+<meta name="description" content="FAB Şirkətlər Qrupu" />
 """
 
 st.markdown(css_page, unsafe_allow_html=True)

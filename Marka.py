@@ -26,6 +26,7 @@ css_header = """
     }
     
 </style>
+<meta name="description" content="FAB Şirkətlər Qrupu" />
 """
 
 st.markdown(css_header, unsafe_allow_html=True)
@@ -75,7 +76,7 @@ if not st.session_state['logged_in']:
 if st.sidebar.button(':blue[:arrow_left: ÇIXIŞ]'):
     st.session_state['logged_in'] = False
     st.session_state['login_region'] = ''
-    st.rerun()  # Refresh the page to show the login form again
+    st.rerun()
 
 bazarlama_region = [
 'BAKI 1',
@@ -155,7 +156,6 @@ SELECT_AY_BAS, SELECT_AY_SON  = st.sidebar.select_slider(
 # show_satilan = st.sidebar.toggle("Satılan müştərilər")
 # =============================================================================
 show_satilmayan = st.sidebar.toggle("Satılmayan müştərilər")
-
 
 #sidebara gore melumatlari filterletirik
 if SELECT_REGION == 'Bütün regionlar üzrə':

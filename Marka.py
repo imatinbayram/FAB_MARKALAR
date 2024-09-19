@@ -3,6 +3,57 @@ import pandas as pd
 import numpy as np
 from io import BytesIO
 
+#Sehifenin nastroykasi
+st.set_page_config(
+    page_title='FAB MARKALAR',
+    page_icon='logo.png',
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'About': "# FAB Markalar \n Bu hesabat FAB şirkətlər qrupu üçün hazırlanmışdır."
+    }
+)
+
+bazarlama_login = {
+'Admin' : 'fab',
+'BAKI 1' : 'FAB10',
+'BAKI 2' : 'FAB90',
+'BAKI 3' : 'FAB99',
+'BAKI 4' : 'FAB77',
+'BAKI 5' : 'FAB01',
+'GENCE1' : 'FAB20',
+'GENCE2' : 'FAB22',
+'GOYCAY' : 'FAB23',
+'QUBA' : 'FAB40',
+'LENKERAN' : 'FAB42',
+'SABIRABAD' : 'FAB54',
+'SEKI' : 'FAB55'
+}
+
+
+if 'logged_in' not in st.session_state:
+    st.session_state['logged_in'] = False
+    st.session_state['login_region'] = ''
+
+# Function to check the password
+def check_password():
+    with st.form(key='login_form'):
+        username_region = st.selectbox('Region', sorted(bazarlama_login.keys()), label_visibility='visible')
+        password = st.text_input('Şifrə', type="password")
+        submit_button = st.form_submit_button('Daxil ol')
+        
+        if submit_button:
+            if username_region in bazarlama_login.keys() and password == bazarlama_login[username_region]:
+                st.session_state['logged_in'] = True
+                st.session_state['login_region'] = username_region
+                st.success("Giriş edilir...")
+                st.experimental_rerun()
+            else:
+                st.error("Şifrə düzgün deyil!")           
+
+if not st.session_state['logged_in']:
+    check_password()
+    st.stop()
 
 bazarlama_region = [
 'BAKI 1',
@@ -21,16 +72,6 @@ bazarlama_region = [
 
 hesabat_aylar = ['Yanvar','Fevral','Mart','Aprel','May','İyun', 'İyul', 'Avqust']
 markalar_mallar_sutunlar = ['ANA_QRUP',	'ALT_QRUP',	'MAL_QRUP', 'STOK_AD']
-#Sehifenin nastroykasi
-st.set_page_config(
-    page_title='FAB MARKALAR',
-    page_icon='logo.png',
-    layout="wide",
-    initial_sidebar_state="expanded",
-    menu_items={
-        'About': "# FAB Markalar \n Bu hesabat FAB şirkətlər qrupu üçün hazırlanmışdır."
-    }
-)
 
 #Excel melumati oxuyuruq
 @st.cache_data
@@ -59,12 +100,16 @@ marka_qrup_list = markalar_mallar['MARKA'].unique()
 
 
 #sidebar secimleri
-show_region_check = st.sidebar.toggle("Bütün regionlar üzrə")
-if show_region_check:
-    SELECT_REGION = 'Bütün regionlar üzrə'
+if st.session_state['login_region'] == 'Admin':
+    show_region_check = st.sidebar.toggle("Bütün regionlar üzrə")
+    if show_region_check:
+        SELECT_REGION = 'Bütün regionlar üzrə'
+    else:
+        SELECT_REGION = st.sidebar.selectbox('Region', sorted(bazarlama_region),
+                                            label_visibility='visible')
 else:
-    SELECT_REGION = st.sidebar.selectbox('Region', sorted(bazarlama_region),
-                                        label_visibility='visible')
+    st.sidebar.title(f"Region - {st.session_state['login_region']}")
+    SELECT_REGION = st.session_state['login_region']
     
 show_marka_check = st.sidebar.toggle("Bütün markalar")
 if show_marka_check:

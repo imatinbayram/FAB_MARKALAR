@@ -151,7 +151,8 @@ else:
 SELECT_AY_BAS, SELECT_AY_SON  = st.sidebar.select_slider(
     'Aylar',
     options=hesabat_aylar,
-    value=(hesabat_aylar[len(hesabat_aylar)//2], hesabat_aylar[-1]),
+    #value=(hesabat_aylar[len(hesabat_aylar)//2], hesabat_aylar[-1]),
+    value=(hesabat_aylar[-3], hesabat_aylar[-1]),
 )
 # =============================================================================
 # show_satilan = st.sidebar.toggle("Satılan müştərilər")

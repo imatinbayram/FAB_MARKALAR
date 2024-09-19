@@ -14,6 +14,22 @@ st.set_page_config(
     }
 )
 
+css_header = """
+<style>
+
+    [data-testid="stHeader"] {
+        display: none;
+    }
+    
+    [data-testid="stElementToolbar"] {
+        display: none;
+    }
+    
+</style>
+"""
+
+st.markdown(css_header, unsafe_allow_html=True)
+
 bazarlama_login = {
 'Admin' : 'fab',
 'BAKI 1' : 'FAB10',
@@ -56,7 +72,7 @@ if not st.session_state['logged_in']:
     st.stop()
 
 # Logout button
-if st.button('Çıxış'):
+if st.sidebar.button(':blue[:arrow_left: ÇIXIŞ]'):
     st.session_state['logged_in'] = False
     st.session_state['login_region'] = ''
     st.experimental_rerun()  # Refresh the page to show the login form again

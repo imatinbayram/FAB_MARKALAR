@@ -26,6 +26,7 @@ css_header = """
     }
     
 </style>
+<title>FAB MARKALAR</title>
 <meta name="description" content="FAB Şirkətlər Qrupu" />
 """
 

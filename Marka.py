@@ -55,6 +55,12 @@ if not st.session_state['logged_in']:
     check_password()
     st.stop()
 
+# Logout button
+if st.button('Çıxış'):
+    st.session_state['logged_in'] = False
+    st.session_state['login_region'] = ''
+    st.experimental_rerun()  # Refresh the page to show the login form again
+
 bazarlama_region = [
 'BAKI 1',
 'BAKI 2',

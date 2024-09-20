@@ -164,7 +164,8 @@ else:
     hesabat_sutunlar = st.sidebar.multiselect(
         "Məlumatlar",
         markalar_mallar_sutunlar,
-        placeholder = 'Əlavə məlumatlar'
+        placeholder = 'Əlavə məlumatlar',
+        label_visibility='collapsed'
     )
     
 

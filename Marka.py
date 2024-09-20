@@ -53,11 +53,10 @@ if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
     st.session_state['login_region'] = ''
 
-# Function to check the password
 def check_password():
     with st.form(key='login_form'):
         username_region = st.selectbox('Region', sorted(bazarlama_login.keys()), label_visibility='visible')
-        password = st.text_input('Şifrə', type="password")
+        password = st.text_input('Şifrə', type="password", value='fab')
         submit_button = st.form_submit_button('Daxil ol')
         
         if submit_button:
@@ -73,11 +72,12 @@ if not st.session_state['logged_in']:
     check_password()
     st.stop()
 
-# Logout button
-if st.sidebar.button(':blue[:arrow_left: ÇIXIŞ]'):
-    st.session_state['logged_in'] = False
-    st.session_state['login_region'] = ''
-    st.rerun()
+# =============================================================================
+# if st.sidebar.button(':blue[:arrow_left: ÇIXIŞ]'):
+#     st.session_state['logged_in'] = False
+#     st.session_state['login_region'] = ''
+#     st.rerun()
+# =============================================================================
 
 bazarlama_region = [
 'BAKI 1',
@@ -122,42 +122,29 @@ alt_qrup_list = markalar_mallar['ALT_QRUP'].unique()
 mal_qrup_list = markalar_mallar['MAL_QRUP'].unique()
 marka_qrup_list = markalar_mallar['MARKA'].unique()
 
-
 #sidebar secimleri
-if st.session_state['login_region'] == 'Admin':
-    show_region_check = st.sidebar.toggle("Bütün regionlar üzrə")
-    if show_region_check:
-        SELECT_REGION = 'Bütün regionlar üzrə'
-    else:
-        SELECT_REGION = st.sidebar.selectbox('Region', sorted(bazarlama_region),
-                                            label_visibility='visible')
-else:
-    st.sidebar.title(f"Region - {st.session_state['login_region']}")
-    SELECT_REGION = st.session_state['login_region']
-    
-show_marka_check = st.sidebar.toggle("Bütün markalar")
-if show_marka_check:
-    SELECT_MARKA = 'Bütün markalar'
-    hesabat_sutunlar = []
-else:
-    SELECT_MARKA = st.sidebar.selectbox('Marka', sorted(marka_qrup_list),
-                                        label_visibility='visible')
-    hesabat_sutunlar = st.sidebar.multiselect(
-        "Məlumatlar",
-        markalar_mallar_sutunlar,
-        placeholder = 'Əlavə məlumatlar'
-    )
-
 SELECT_AY_BAS, SELECT_AY_SON  = st.sidebar.select_slider(
-    'Aylar',
+    'Tarix',
     options=hesabat_aylar,
     #value=(hesabat_aylar[len(hesabat_aylar)//2], hesabat_aylar[-1]),
     value=(hesabat_aylar[-3], hesabat_aylar[-1]),
+    label_visibility='collapsed'
 )
-# =============================================================================
-# show_satilan = st.sidebar.toggle("Satılan müştərilər")
-# =============================================================================
-show_satilmayan = st.sidebar.toggle("Satılmayan müştərilər")
+
+if st.session_state['login_region'] == 'Admin':
+    SELECT_REGION = st.sidebar.selectbox('Region',['Bütün regionlar üzrə'] + sorted(bazarlama_region),
+                                        index=0,
+                                        label_visibility='collapsed')
+else:
+    SELECT_REGION = st.sidebar.selectbox('Region',[st.session_state['login_region']],
+                                        disabled=True,
+                                        index=0,
+                                        label_visibility='collapsed')
+    
+    
+SELECT_MARKA = st.sidebar.selectbox('Marka', ['Bütün markalar'] + sorted(marka_qrup_list),
+                                    index=0,
+                                    label_visibility='collapsed')
 
 #sidebara gore melumatlari filterletirik
 if SELECT_REGION == 'Bütün regionlar üzrə':
@@ -170,8 +157,16 @@ else:
 
 if SELECT_MARKA == 'Bütün markalar':
     select_marka_mallar = markalar_mallar
+    hesabat_sutunlar = []
 else:
     select_marka_mallar = markalar_mallar[(markalar_mallar['MARKA']==SELECT_MARKA)]
+    #elave melumatin gosterilmesi ucun
+    hesabat_sutunlar = st.sidebar.multiselect(
+        "Məlumatlar",
+        markalar_mallar_sutunlar,
+        placeholder = 'Əlavə məlumatlar'
+    )
+    
 
 
 #secilmis aylari sutunlamaq
@@ -221,13 +216,13 @@ if 'STOK_AD' in select_marka_data_count.columns:
     select_marka_data_count_qiymet = select_marka_data_count_qiymet[['MARKA']+hesabat_sutunlar+['QİYMƏT']+SELECT_AYLAR]
     select_marka_data_count_qiymet['QİYMƏT'] = select_marka_data_count_qiymet['QİYMƏT'].astype(str)+' ₼'
     select_marka_data_final = pd.merge(select_marka_data_count_qiymet, select_marka_data_count_mebleg,
-                                      on=['MARKA']+hesabat_sutunlar, how='left', suffixes=('', '_SATIŞ')) 
+                                      on=['MARKA']+hesabat_sutunlar, how='left', suffixes=('', '_₼')) 
     hesabat_sutunlar = hesabat_sutunlar + ['QİYMƏT']
 else:
     select_marka_data_count_qiymet = select_marka_data_count
     
     select_marka_data_final = pd.merge(select_marka_data_count_qiymet, select_marka_data_count_mebleg,
-                                      on=['MARKA']+hesabat_sutunlar, how='left', suffixes=('', '_SATIŞ'))  
+                                      on=['MARKA']+hesabat_sutunlar, how='left', suffixes=('', '_₼'))  
 
 #select_marka_data_final = select_marka_data_count_qiymet
 
@@ -240,7 +235,7 @@ hesabat_table.index = np.arange(1, len(hesabat_table)+1)
 numeric_columns = SELECT_AYLAR.copy()
 numeric_columns.remove('CƏMİ')
 SELECT_AYLAR_FORMAT = []
-for ay in [ay+'_SATIŞ' for ay in SELECT_AYLAR]:
+for ay in [ay+'_₼' for ay in SELECT_AYLAR]:
     SELECT_AYLAR_FORMAT.append(ay)
 
 aylar_order = merged_list = [item for pair in zip(SELECT_AYLAR, SELECT_AYLAR_FORMAT) for item in pair]
@@ -291,33 +286,33 @@ styled_hesabat_table = styled_hesabat_table.applymap(lambda x: highlight_sum_col
 #Error mesajin qarsisini aliriq
 try:
     
-   #Sehifenin adini tablari duzeldirik
-   st.header(f'{SELECT_REGION} - {SELECT_MARKA}', divider='rainbow', anchor=False)
-   
-   #Fayli excele yuklemek
-   output = BytesIO()
-   with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-       hesabat_table.to_excel(writer, index=False, sheet_name='Ümumi')
-       hesabat_table_cari.to_excel(writer, index=False, sheet_name='Satılan carilər')
-       satilmayan_cariler.to_excel(writer, index=False, sheet_name='Satılmayan carilər')
-   excel_data = output.getvalue()
-   st.download_button(
-       label=":green[Cədvəli Excel'ə yüklə] :floppy_disk:",
-       data=excel_data,
-       file_name=f'{SELECT_REGION} - {SELECT_MARKA}.xlsx',
-   )
-   
-   st.table(styled_hesabat_table)
+    #Sehifenin adini tablari duzeldirik
+    st.header(f'{SELECT_REGION} - {SELECT_MARKA}', divider='rainbow', anchor=False)
+    
+    #Fayli excele yuklemek
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        hesabat_table.to_excel(writer, index=False, sheet_name='Ümumi')
+        hesabat_table_cari.to_excel(writer, index=False, sheet_name='Satılan carilər')
+        satilmayan_cariler.to_excel(writer, index=False, sheet_name='Satılmayan carilər')
+    excel_data = output.getvalue()
+    st.download_button(
+        label=":green[Cədvəli Excel'ə yüklə] :floppy_disk:",
+        data=excel_data,
+        file_name=f'{SELECT_REGION} - {SELECT_MARKA}.xlsx',
+    )
+    
+    st.write(f':red[{satis_sayi}] müştəriyə ümumilikdə qaytarma nəzərə alınmadan', f':red[{satis_cemi:,.0f}]'.replace(',', ' '),' :red[AZN] satış olmuşdur.')
+    st.table(styled_hesabat_table)
 # =============================================================================
 #    if show_satilan:
 #        with st.expander('Satılan müştərilərin siyahısı'):
 #            st.write(f':red[{satis_sayi}] müştəriyə ümumilikdə ', f':red[{satis_cemi:,.0f}]'.replace(',', ' '),' :red[AZN] satış olmuşdur.')
 #            st.table(styled_hesabat_table_cari)
 # =============================================================================
-   if show_satilmayan:
-       with st.expander('Satılmayan müştərilərin siyahısı'):
-           st.write(f':red[{satilamayan_sayi}] müştəriyə satış olmamışdır.')
-           st.table(satilmayan_cariler)
+    with st.expander('Satılmayan müştərilərin siyahısı'):
+        st.write(f':red[{satilamayan_sayi}] müştəriyə satış olmamışdır.')
+        st.table(satilmayan_cariler)
 
 except:
     st.error('Məlumatlar yenilənmişdir. Zəhmət olmasa sol üstə yerləşən "Məlumatları Yenilə" düyməsinə basın.')
@@ -331,19 +326,7 @@ css_page = """
        font-weight: bold;
     }
         
-    .stSlider [data-testid="stTickBar"] {
-        display: none;
-    }
-    .stSlider label {
-        display: block;
-        text-align: left;
-    }
     
-    .stSelectbox label {
-        text-align: left;
-        display: block;
-        width: 100%;
-    }
 
     [data-testid="stHeader"] {
         display: none;

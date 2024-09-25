@@ -56,7 +56,7 @@ if 'logged_in' not in st.session_state:
 def check_password():
     with st.form(key='login_form'):
         username_region = st.selectbox('Region', sorted(bazarlama_login.keys()), label_visibility='visible')
-        password = st.text_input('Şifrə', type="password", value='fab')
+        password = st.text_input('Şifrə', type="password")
         submit_button = st.form_submit_button('Daxil ol')
         
         if submit_button:

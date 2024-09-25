@@ -56,7 +56,7 @@ if 'logged_in' not in st.session_state:
 def check_password():
     with st.form(key='login_form'):
         username_region = st.selectbox('Region', sorted(bazarlama_login.keys()), label_visibility='visible')
-        password = st.text_input('Şifrə', type="password")
+        password = st.text_input('Şifrə', type="password", value='fab')
         submit_button = st.form_submit_button('Daxil ol')
         
         if submit_button:
@@ -97,6 +97,11 @@ bazarlama_region = [
 hesabat_aylar = ['Yanvar','Fevral','Mart','Aprel','May','İyun', 'İyul', 'Avqust', 'Sentyabr']
 markalar_mallar_sutunlar = ['ANA_QRUP',	'ALT_QRUP',	'MAL_QRUP', 'STOK_AD']
 
+SELECT_ANA_QRUP = list()
+SELECT_ALT_QRUP = list()
+SELECT_MAL_QRUP = list()
+SELECT_STOK_QRUP = list()
+
 #Excel melumati oxuyuruq
 @st.cache_data
 def load_data():
@@ -117,9 +122,6 @@ data = data.drop(['C_AD','S_AD'], axis=1)
 
 #sidebarda istifade etmek ucun listler yaradiriq
 bazarlama_qol_list = markalar_mallar['QOL'].unique()
-ana_qrup_list = markalar_mallar['ANA_QRUP'].unique()
-alt_qrup_list = markalar_mallar['ALT_QRUP'].unique()
-mal_qrup_list = markalar_mallar['MAL_QRUP'].unique()
 marka_qrup_list = markalar_mallar['MARKA'].unique()
 
 #sidebar secimleri
@@ -134,15 +136,18 @@ SELECT_AY_BAS, SELECT_AY_SON  = st.sidebar.select_slider(
 if st.session_state['login_region'] == 'Admin':
     SELECT_REGION = st.sidebar.selectbox('Region',['Bütün regionlar üzrə'] + sorted(bazarlama_region),
                                         index=0,
+                                        placeholder = 'Region',
                                         label_visibility='collapsed')
 else:
     SELECT_REGION = st.sidebar.selectbox('Region',[st.session_state['login_region']],
                                         disabled=True,
+                                        placeholder = 'Region',
                                         index=0,
                                         label_visibility='collapsed')
     
     
 SELECT_MARKA = st.sidebar.selectbox('Marka', ['Bütün markalar'] + sorted(marka_qrup_list),
+                                    placeholder = 'Marka',
                                     index=0,
                                     label_visibility='collapsed')
 
@@ -156,10 +161,10 @@ else:
     region_select_cariler = cariler[(cariler['GROUP']==SELECT_REGION)]
 
 if SELECT_MARKA == 'Bütün markalar':
-    select_marka_mallar = markalar_mallar
+    select_marka_mallar_marka = markalar_mallar
     hesabat_sutunlar = []
 else:
-    select_marka_mallar = markalar_mallar[(markalar_mallar['MARKA']==SELECT_MARKA)]
+    select_marka_mallar_marka = markalar_mallar[(markalar_mallar['MARKA']==SELECT_MARKA)]
     #elave melumatin gosterilmesi ucun
     hesabat_sutunlar = st.sidebar.multiselect(
         "Məlumatlar",
@@ -168,7 +173,73 @@ else:
         label_visibility='collapsed'
     )
     
+    if 'ANA_QRUP' in hesabat_sutunlar:
+        ana_qrup_list = select_marka_mallar_marka['ANA_QRUP'].unique()
+        SELECT_ANA_QRUP = st.sidebar.multiselect(
+            "Ana qrup",
+            sorted(ana_qrup_list),
+            placeholder = 'Ana qrup',
+            label_visibility='collapsed'
+        )
+    else:
+        SELECT_ANA_QRUP = list()
+    
+    if 'ALT_QRUP' in hesabat_sutunlar:
+        alt_qrup_list = select_marka_mallar_marka[
+            select_marka_mallar_marka['ANA_QRUP'].isin(SELECT_ANA_QRUP if SELECT_ANA_QRUP else select_marka_mallar_marka['ANA_QRUP'])
+            ]['ALT_QRUP'].unique()
+        SELECT_ALT_QRUP = st.sidebar.multiselect(
+            "Alt qrup",
+            sorted(alt_qrup_list),
+            placeholder = 'Alt qrup',
+            label_visibility='collapsed'
+        )
+    else:
+        SELECT_ALT_QRUP = list()
+        
+    if 'MAL_QRUP' in hesabat_sutunlar:
+        mal_qrup_list = select_marka_mallar_marka[
+            select_marka_mallar_marka['ANA_QRUP'].isin(SELECT_ANA_QRUP if SELECT_ANA_QRUP else select_marka_mallar_marka['ANA_QRUP'])
+            &
+            select_marka_mallar_marka['ALT_QRUP'].isin(SELECT_ALT_QRUP if SELECT_ALT_QRUP else select_marka_mallar_marka['ALT_QRUP'])
+            ]['MAL_QRUP'].unique()
+        SELECT_MAL_QRUP = st.sidebar.multiselect(
+            "Mal qrup",
+            sorted(mal_qrup_list),
+            placeholder = 'Mal qrup',
+            label_visibility='collapsed'
+        )
+    else:
+        SELECT_MAL_QRUP = list()
 
+    if 'STOK_AD' in hesabat_sutunlar:
+        stok_qrup_list = select_marka_mallar_marka[
+            select_marka_mallar_marka['ANA_QRUP'].isin(SELECT_ANA_QRUP if SELECT_ANA_QRUP else select_marka_mallar_marka['ANA_QRUP'])
+            &
+            select_marka_mallar_marka['ALT_QRUP'].isin(SELECT_ALT_QRUP if SELECT_ALT_QRUP else select_marka_mallar_marka['ALT_QRUP'])
+            &
+            select_marka_mallar_marka['MAL_QRUP'].isin(SELECT_MAL_QRUP if SELECT_MAL_QRUP else select_marka_mallar_marka['MAL_QRUP'])
+            ]['STOK_AD'].unique()
+        SELECT_STOK_QRUP = st.sidebar.multiselect(
+            "Stok",
+            sorted(stok_qrup_list),
+            placeholder = 'Stok',
+            label_visibility='collapsed'
+        )
+    else:
+        SELECT_STOK_QRUP = list()
+
+select_marka_mallar_filter = select_marka_mallar_marka[
+    select_marka_mallar_marka['ANA_QRUP'].isin(SELECT_ANA_QRUP if SELECT_ANA_QRUP else select_marka_mallar_marka['ANA_QRUP'])
+    &
+    select_marka_mallar_marka['ALT_QRUP'].isin(SELECT_ALT_QRUP if SELECT_ALT_QRUP else select_marka_mallar_marka['ALT_QRUP'])
+    &
+    select_marka_mallar_marka['MAL_QRUP'].isin(SELECT_MAL_QRUP if SELECT_MAL_QRUP else select_marka_mallar_marka['MAL_QRUP'])
+    &
+    select_marka_mallar_marka['STOK_AD'].isin(SELECT_STOK_QRUP if SELECT_STOK_QRUP else select_marka_mallar_marka['STOK_AD'])
+    ]
+
+select_marka_mallar = select_marka_mallar_filter
 
 #secilmis aylari sutunlamaq
 start_index = hesabat_aylar.index(SELECT_AY_BAS)

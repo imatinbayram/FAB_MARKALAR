@@ -94,7 +94,7 @@ bazarlama_region = [
 'SEKI'
 ]
 
-hesabat_aylar = ['Yanvar','Fevral','Mart','Aprel','May','İyun', 'İyul', 'Avqust']
+hesabat_aylar = ['Yanvar','Fevral','Mart','Aprel','May','İyun', 'İyul', 'Avqust', 'Sentyabr']
 markalar_mallar_sutunlar = ['ANA_QRUP',	'ALT_QRUP',	'MAL_QRUP', 'STOK_AD']
 
 #Excel melumati oxuyuruq

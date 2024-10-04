@@ -111,13 +111,12 @@ def load_data():
     return data, markalar_mallar, cariler
 
 #Melumat yenilemek ucun knopka
+st.sidebar.text('Son yenilənmə: 30.09.2024')
 res_button = st.sidebar.button(':red[🗘 Məlumatları Yenilə]')
 if res_button:
     st.cache_data.clear()
 with st.spinner('Məlumatlar yüklənir...'):
     data, markalar_mallar, cariler = load_data()
-
-st.text('Son yenilənmə: 30.09.2024')
 
 #Musteri adi ve stok adi drop edirik
 data = data.drop(['C_AD','S_AD'], axis=1)

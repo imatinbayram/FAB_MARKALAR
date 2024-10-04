@@ -117,6 +117,8 @@ if res_button:
 with st.spinner('Məlumatlar yüklənir...'):
     data, markalar_mallar, cariler = load_data()
 
+st.text('Son yenilənmə: 30.09.2024')
+
 #Musteri adi ve stok adi drop edirik
 data = data.drop(['C_AD','S_AD'], axis=1)
 

@@ -121,9 +121,6 @@ with st.spinner('Məlumatlar yüklənir...'):
 #Musteri adi ve stok adi drop edirik
 data = data.drop(['C_AD','S_AD'], axis=1)
 
-#Bildiriş göndəririk
-st.info('Yeni gələn şuruplar YIWU HAOXING markasına əlavə olundu.', icon="ℹ️")
-
 #sidebarda istifade etmek ucun listler yaradiriq
 bazarlama_qol_list = markalar_mallar['QOL'].unique()
 marka_qrup_list = markalar_mallar['MARKA'].unique()
@@ -138,6 +135,10 @@ SELECT_AY_BAS, SELECT_AY_SON  = st.sidebar.select_slider(
 )
 
 if st.session_state['login_region'] == 'Admin':
+    
+    #Bildiriş göndəririk
+    st.warning(' Yeni gələn şuruplar YIWU HAOXING markasına əlavə olundu.', icon="⚠️")
+    
     SELECT_REGION = st.sidebar.selectbox('Region',['Bütün regionlar üzrə'] + sorted(bazarlama_region),
                                         index=0,
                                         placeholder = 'Region',

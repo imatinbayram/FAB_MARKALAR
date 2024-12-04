@@ -121,6 +121,9 @@ with st.spinner('Məlumatlar yüklənir...'):
 #Musteri adi ve stok adi drop edirik
 data = data.drop(['C_AD','S_AD'], axis=1)
 
+#Bildiriş göndəririk
+st.info('Yeni gələn şuruplar YIWU HAOXING markasına əlavə olundu.', icon="ℹ️")
+
 #sidebarda istifade etmek ucun listler yaradiriq
 bazarlama_qol_list = markalar_mallar['QOL'].unique()
 marka_qrup_list = markalar_mallar['MARKA'].unique()

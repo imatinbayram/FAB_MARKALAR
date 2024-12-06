@@ -149,12 +149,11 @@ else:
                                         placeholder = 'Region',
                                         index=0,
                                         label_visibility='collapsed')
-    
-    
+     
 SELECT_MARKA = st.sidebar.selectbox('Marka', ['Bütün markalar'] + sorted(marka_qrup_list),
                                     placeholder = 'Marka',
                                     index=0,
-                                    label_visibility='collapsed')
+                                    label_visibility='collapsed', )
 
 #sidebara gore melumatlari filterletirik
 if SELECT_REGION == 'Bütün regionlar üzrə':
@@ -251,7 +250,6 @@ start_index = hesabat_aylar.index(SELECT_AY_BAS)
 end_index = hesabat_aylar.index(SELECT_AY_SON)
 SELECT_AYLAR = hesabat_aylar[start_index:end_index + 1]
 
-
 #sidebara gore secilen mallarin excelini yaradiqi
 region_marka_merge_data = pd.merge(select_marka_mallar, region_select_data,
                                    left_on='STOK_KOD', right_on='S_KOD', how='left')
@@ -259,11 +257,13 @@ select_marka_data = region_marka_merge_data[['MARKA','C_KOD']+hesabat_sutunlar+S
 select_marka_data['CƏMİ'] = select_marka_data[SELECT_AYLAR].sum(axis=1)
 SELECT_AYLAR = SELECT_AYLAR + ['CƏMİ']
 select_marka_data[SELECT_AYLAR] = select_marka_data[SELECT_AYLAR].applymap(lambda x: np.nan if pd.isna(x) or x <= 0 else x)
-select_marka_data_sum = select_marka_data.groupby(['MARKA','C_KOD']+hesabat_sutunlar, as_index=False)[SELECT_AYLAR].count()
-select_marka_data_sum_mebleg = select_marka_data.groupby(['MARKA','C_KOD']+hesabat_sutunlar, as_index=False)[SELECT_AYLAR].sum()
+select_marka_data_sum = select_marka_data.groupby(['MARKA','C_KOD']+hesabat_sutunlar, as_index=False, dropna=False)[SELECT_AYLAR].count()
+select_marka_data_sum_mebleg = select_marka_data.groupby(['MARKA','C_KOD']+hesabat_sutunlar, as_index=False, dropna=False)[SELECT_AYLAR].sum()
 select_marka_data_sum[SELECT_AYLAR] = select_marka_data_sum[SELECT_AYLAR].applymap(lambda x: np.nan if pd.isna(x) or x <= 0 else x)
-select_marka_data_count = select_marka_data_sum.groupby(['MARKA']+hesabat_sutunlar, as_index=False)[SELECT_AYLAR].count()
-select_marka_data_count_mebleg = select_marka_data_sum_mebleg.groupby(['MARKA']+hesabat_sutunlar, as_index=False)[SELECT_AYLAR].sum()
+select_marka_data_count = select_marka_data_sum.groupby(['MARKA']+hesabat_sutunlar, as_index=False, dropna=False)[SELECT_AYLAR].count()
+select_marka_data_count_mebleg = select_marka_data_sum_mebleg.groupby(['MARKA']+hesabat_sutunlar, as_index=False, dropna=False)[SELECT_AYLAR].sum()
+
+st.write(select_marka_data)
 
 #cariler uzre cixaris
 select_marka_data_count_mebleg_cari = select_marka_data_sum_mebleg.groupby(['MARKA','C_KOD']+hesabat_sutunlar, as_index=False)[SELECT_AYLAR].sum()

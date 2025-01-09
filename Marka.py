@@ -137,7 +137,7 @@ SELECT_AY_BAS, SELECT_AY_SON  = st.sidebar.select_slider(
 if st.session_state['login_region'] == 'Admin':
     
     #Bildiriş göndəririk
-    st.warning(' Yeni gələn şuruplar YIWU HAOXING markasına əlavə olundu.', icon="⚠️")
+    #st.warning(' Yeni gələn şuruplar YIWU HAOXING markasına əlavə olundu.', icon="⚠️")
     
     SELECT_REGION = st.sidebar.selectbox('Region',['Bütün regionlar üzrə'] + sorted(bazarlama_region),
                                         index=0,
@@ -262,8 +262,6 @@ select_marka_data_sum_mebleg = select_marka_data.groupby(['MARKA','C_KOD']+hesab
 select_marka_data_sum[SELECT_AYLAR] = select_marka_data_sum[SELECT_AYLAR].applymap(lambda x: np.nan if pd.isna(x) or x <= 0 else x)
 select_marka_data_count = select_marka_data_sum.groupby(['MARKA']+hesabat_sutunlar, as_index=False, dropna=False)[SELECT_AYLAR].count()
 select_marka_data_count_mebleg = select_marka_data_sum_mebleg.groupby(['MARKA']+hesabat_sutunlar, as_index=False, dropna=False)[SELECT_AYLAR].sum()
-
-st.write(select_marka_data)
 
 #cariler uzre cixaris
 select_marka_data_count_mebleg_cari = select_marka_data_sum_mebleg.groupby(['MARKA','C_KOD']+hesabat_sutunlar, as_index=False)[SELECT_AYLAR].sum()

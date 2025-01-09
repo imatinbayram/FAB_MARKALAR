@@ -94,7 +94,7 @@ bazarlama_region = [
 'SEKI'
 ]
 
-hesabat_aylar = ['Yanvar','Fevral','Mart','Aprel','May','İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr']
+hesabat_aylar = ['Yanvar','Fevral','Mart','Aprel','May','İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr']
 markalar_mallar_sutunlar = ['ANA_QRUP',	'ALT_QRUP',	'MAL_QRUP', 'STOK_AD']
 
 SELECT_ANA_QRUP = list()
@@ -111,7 +111,7 @@ def load_data():
     return data, markalar_mallar, cariler
 
 #Melumat yenilemek ucun knopka
-st.sidebar.text('Son yenilənmə: 30.11.2024')
+st.sidebar.text('Son yenilənmə: 31.12.2024')
 res_button = st.sidebar.button(':red[🗘 Məlumatları Yenilə]')
 if res_button:
     st.cache_data.clear()

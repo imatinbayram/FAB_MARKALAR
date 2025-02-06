@@ -94,7 +94,9 @@ bazarlama_region = [
 'SEKI'
 ]
 
-hesabat_aylar = ['Yanvar','Fevral','Mart','Aprel','May','İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr']
+hesabat_aylar = ['2024_01',	'2024_02',	'2024_03',	'2024_04',	'2024_05',	'2024_06',
+                 '2024_07',	'2024_08',	'2024_09',	'2024_10',	'2024_11',	'2024_12',
+                 '2025_01']
 markalar_mallar_sutunlar = ['ANA_QRUP',	'ALT_QRUP',	'MAL_QRUP', 'STOK_AD']
 
 SELECT_ANA_QRUP = list()

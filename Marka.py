@@ -113,7 +113,7 @@ def load_data():
     return data, markalar_mallar, cariler
 
 #Melumat yenilemek ucun knopka
-st.sidebar.text('Son yenilənmə: 31.12.2024')
+st.sidebar.text('Son yenilənmə: 31.01.2025')
 res_button = st.sidebar.button(':red[🗘 Məlumatları Yenilə]')
 if res_button:
     st.cache_data.clear()

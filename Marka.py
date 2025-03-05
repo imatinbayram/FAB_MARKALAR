@@ -139,7 +139,7 @@ SELECT_AY_BAS, SELECT_AY_SON  = st.sidebar.select_slider(
 if st.session_state['login_region'] == 'Admin':
     
     #Bildiriş göndəririk
-    st.info('SAFVIDA, ANDELI markası əlavə olundu. Sol tərəfdən :red[🗘 Məlumatları Yenilə] klik edib yeniləyə bilərsiz.', icon="ℹ️")
+    #st.info('SAFVIDA, ANDELI markası əlavə olundu. Sol tərəfdən :red[🗘 Məlumatları Yenilə] klik edib yeniləyə bilərsiz.', icon="ℹ️")
     
     SELECT_REGION = st.sidebar.selectbox('Region',['Bütün regionlar üzrə'] + sorted(bazarlama_region),
                                         index=0,

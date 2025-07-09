@@ -53,6 +53,7 @@ if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
     st.session_state['login_region'] = ''
 
+
 def check_password():
     with st.form(key='login_form'):
         username_region = st.selectbox('Region', sorted(bazarlama_login.keys()), label_visibility='visible')
@@ -96,7 +97,7 @@ bazarlama_region = [
 
 hesabat_aylar = ['2024_01',	'2024_02',	'2024_03',	'2024_04',	'2024_05',	'2024_06',
                  '2024_07',	'2024_08',	'2024_09',	'2024_10',	'2024_11',	'2024_12',
-                 '2025_01', '2025_02', '2025_03', '2025_04', '2025_05']
+                 '2025_01', '2025_02', '2025_03', '2025_04', '2025_05', '2025_06']
 markalar_mallar_sutunlar = ['ANA_QRUP',	'ALT_QRUP',	'MAL_QRUP', 'STOK_AD']
 
 SELECT_ANA_QRUP = list()
@@ -113,7 +114,7 @@ def load_data():
     return data, markalar_mallar, cariler
 
 #Melumat yenilemek ucun knopka
-st.sidebar.text('Son yenilənmə: 31.05.2025')
+st.sidebar.text('Son yenilənmə: 30.06.2025')
 res_button = st.sidebar.button(':red[🗘 Məlumatları Yenilə]')
 if res_button:
     st.cache_data.clear()

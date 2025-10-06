@@ -15,17 +15,6 @@ st.set_page_config(
 )
 
 css_header = """
-<style>
-
-    [data-testid="stHeader"] {
-        display: none;
-    }
-    
-    [data-testid="stElementToolbar"] {
-        display: none;
-    }
-    
-</style>
 <title>FAB MARKALAR</title>
 <meta name="description" content="FAB Şirkətlər Qrupu" />
 """
@@ -98,7 +87,7 @@ bazarlama_region = [
 hesabat_aylar = ['2024_01',	'2024_02',	'2024_03',	'2024_04',	'2024_05',	'2024_06',
                  '2024_07',	'2024_08',	'2024_09',	'2024_10',	'2024_11',	'2024_12',
                  '2025_01', '2025_02', '2025_03', '2025_04', '2025_05', '2025_06',
-                 '2025_07','2025_08']
+                 '2025_07','2025_08','2025_09']
 markalar_mallar_sutunlar = ['ANA_QRUP',	'ALT_QRUP',	'MAL_QRUP', 'STOK_AD']
 
 SELECT_ANA_QRUP = list()
@@ -115,7 +104,7 @@ def load_data():
     return data, markalar_mallar, cariler
 
 #Melumat yenilemek ucun knopka
-st.sidebar.text('Son yenilənmə: 31.08.2025')
+st.sidebar.text('Son yenilənmə: 30.09.2025')
 res_button = st.sidebar.button(':red[🗘 Məlumatları Yenilə]')
 if res_button:
     st.cache_data.clear()
@@ -399,30 +388,19 @@ except:
     
 css_page = """
 <style>
-
     th {
        color: black;
        font-weight: bold;
     }
-        
     
+    [data-testid="stToolbarActionButton"] { display: none; }
+    [data-testid="stMainMenu"] { display: none; }
+    
+    [class="viewerBadge_link__qRIco"] { display: none; }
 
-    [data-testid="stHeader"] {
-        display: none;
-    }
-    
-    [class="viewerBadge_link__qRIco"] {
-        display: none;
-    }
-    
-    [data-testid="stElementToolbar"] {
-        display: none;
-    }
-    
-    button[title="View fullscreen"] {
-        visibility: hidden;
-    }
-    
+    [data-testid="stElementToolbar"] { display: none; }
+
+    button[title="View fullscreen"] { visibility: hidden; }
 </style>
 <title>FAB MARKALAR</title>
 <meta name="description" content="FAB Şirkətlər Qrupu" />

@@ -100,7 +100,7 @@ SELECT_STOK_QRUP = list()
 
 def BazarlamaDataSale():
     query = f"""
-    EXEC dbo.BazarlamaDataSale 
+    EXEC MikroDB_V16_05.dbo.BazarlamaDataSale 
      @StartDate = '2025-01-01',
      @EndDate   = '2026-01-31';
     """

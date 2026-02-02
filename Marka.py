@@ -160,7 +160,7 @@ else:
     region_select_data = region_select_data.drop(['GROUP'], axis=1)
     region_select_cariler = cariler[(cariler['GROUP']==SELECT_REGION)]
 
-if SELECT_MARKA:
+if SELECT_SEGMENT:
     hesabat_sutunlar = ['C_SEGMENT']
 else:
     hesabat_sutunlar = []
@@ -419,6 +419,7 @@ css_page = """
 
 
 st.markdown(css_page, unsafe_allow_html=True)
+
 
 
 

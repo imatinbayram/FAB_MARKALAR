@@ -101,7 +101,8 @@ def load_data():
     data = pd.read_excel('BazarlamaData.xlsx')
     markalar_mallar = pd.read_excel('MarkalarMallar.xlsx')
     cariler = pd.read_excel('Cariler.xlsx')
-    return data, markalar_mallar, cariler
+    segment = pd.read_excel('Segment.xlsx')
+    return data, markalar_mallar, cariler, segment
 
 #Melumat yenilemek ucun knopka
 st.sidebar.text('Son yenilənmə: 31.12.2025')
@@ -142,7 +143,12 @@ else:
                                         placeholder = 'Region',
                                         index=0,
                                         label_visibility='collapsed')
-     
+
+SELECT_SEGMENT = st.sidebar.selectbox('Seqment', ['Gizlə','Göstər'],
+                                    placeholder = 'Seqment',
+                                    index=0,
+                                    label_visibility='collapsed', )
+
 SELECT_MARKA = st.sidebar.selectbox('Marka', ['Bütün markalar'] + sorted(marka_qrup_list),
                                     placeholder = 'Marka',
                                     index=0,
@@ -157,18 +163,23 @@ else:
     region_select_data = region_select_data.drop(['GROUP'], axis=1)
     region_select_cariler = cariler[(cariler['GROUP']==SELECT_REGION)]
 
+if SELECT_MARKA == 'Gizlə':
+    hesabat_sutunlar = []
+else:
+    hesabat_sutunlar = ['C_SEGMENT']
+    
 if SELECT_MARKA == 'Bütün markalar':
     select_marka_mallar_marka = markalar_mallar
-    hesabat_sutunlar = []
 else:
     select_marka_mallar_marka = markalar_mallar[(markalar_mallar['MARKA']==SELECT_MARKA)]
     #elave melumatin gosterilmesi ucun
-    hesabat_sutunlar = st.sidebar.multiselect(
+    hesabat_sutunlar_melumat = st.sidebar.multiselect(
         "Məlumatlar",
         markalar_mallar_sutunlar,
         placeholder = 'Əlavə məlumatlar',
         label_visibility='collapsed'
     )
+    hesabat_sutunlar.append(hesabat_sutunlar_melumat)
     
     if 'ANA_QRUP' in hesabat_sutunlar:
         ana_qrup_list = select_marka_mallar_marka['ANA_QRUP'].unique()
@@ -244,8 +255,11 @@ end_index = hesabat_aylar.index(SELECT_AY_SON)
 SELECT_AYLAR = hesabat_aylar[start_index:end_index + 1]
 
 #sidebara gore secilen mallarin excelini yaradiqi
-region_marka_merge_data = pd.merge(select_marka_mallar, region_select_data,
+region_marka_merge_data_segment = pd.merge(select_marka_mallar, region_select_data,
                                    left_on='STOK_KOD', right_on='S_KOD', how='left')
+region_marka_merge_data = pd.merge(region_marka_merge_data_segment, segment,
+                                   left_on='C_KOD', right_on='C_KOD', how='left')
+
 select_marka_data = region_marka_merge_data[['MARKA','C_KOD']+hesabat_sutunlar+SELECT_AYLAR]
 select_marka_data['CƏMİ'] = select_marka_data[SELECT_AYLAR].sum(axis=1)
 SELECT_AYLAR = SELECT_AYLAR + ['CƏMİ']
@@ -408,4 +422,5 @@ css_page = """
 
 
 st.markdown(css_page, unsafe_allow_html=True)
+
 

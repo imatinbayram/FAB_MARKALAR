@@ -144,10 +144,7 @@ else:
                                         index=0,
                                         label_visibility='collapsed')
 
-SELECT_SEGMENT = st.sidebar.selectbox('Seqment', ['Gizlə','Göstər'],
-                                    placeholder = 'Seqment',
-                                    index=0,
-                                    label_visibility='collapsed', )
+SELECT_SEGMENT = st.sidebar.checkbox("Seqmentləri göstər")
 
 SELECT_MARKA = st.sidebar.selectbox('Marka', ['Bütün markalar'] + sorted(marka_qrup_list),
                                     placeholder = 'Marka',
@@ -163,10 +160,10 @@ else:
     region_select_data = region_select_data.drop(['GROUP'], axis=1)
     region_select_cariler = cariler[(cariler['GROUP']==SELECT_REGION)]
 
-if SELECT_MARKA == 'Gizlə':
-    hesabat_sutunlar = []
-else:
+if SELECT_MARKA:
     hesabat_sutunlar = ['C_SEGMENT']
+else:
+    hesabat_sutunlar = []
     
 if SELECT_MARKA == 'Bütün markalar':
     select_marka_mallar_marka = markalar_mallar
@@ -422,6 +419,7 @@ css_page = """
 
 
 st.markdown(css_page, unsafe_allow_html=True)
+
 
 
 

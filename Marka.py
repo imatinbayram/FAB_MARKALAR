@@ -102,7 +102,7 @@ def BazarlamaDataSale():
     query = f"""
     EXEC MikroDB_V16_05.dbo.BazarlamaDataSale 
      @StartDate = '2025-01-01',
-     @EndDate   = '2026-01-31';
+     @EndDate   = '2026-01-31'
     """
     url = "http://81.17.83.210:1999/api/Metin/GetQueryTable"
     headers = {"Content-Type": "application/json", "Accept": "application/json"}

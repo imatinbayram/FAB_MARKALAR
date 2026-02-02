@@ -114,10 +114,10 @@ def BazarlamaDataSale():
         if api_data["Code"] == 0:
             return pd.DataFrame(api_data["Data"])
         else:
-            st.warning(f"API Error ({store_code}): {api_data['Message']}")
+            st.warning(f"API Error: {api_data['Message']}")
             return pd.DataFrame()
     else:
-        st.error(f"HTTP Error ({store_code}): {response.status_code} {response.text}")
+        st.error(f"HTTP Error: {response.status_code} {response.text}")
         return pd.DataFrame()
 
 @st.cache_data

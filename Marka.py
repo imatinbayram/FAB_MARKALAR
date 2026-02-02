@@ -88,7 +88,8 @@ bazarlama_region = [
 hesabat_aylar = ['2024_01',	'2024_02',	'2024_03',	'2024_04',	'2024_05',	'2024_06',
                  '2024_07',	'2024_08',	'2024_09',	'2024_10',	'2024_11',	'2024_12',
                  '2025_01', '2025_02', '2025_03', '2025_04', '2025_05', '2025_06',
-                 '2025_07','2025_08','2025_09','2025_10', '2025_11', '2025_12']
+                 '2025_07','2025_08','2025_09','2025_10', '2025_11', '2025_12',
+                 '2026_01']
 markalar_mallar_sutunlar = ['ANA_QRUP',	'ALT_QRUP',	'MAL_QRUP', 'STOK_AD']
 
 SELECT_ANA_QRUP = list()
@@ -128,7 +129,7 @@ def load_data():
     return data, markalar_mallar, cariler, segment
 
 #Melumat yenilemek ucun knopka
-st.sidebar.text('Son yenilənmə: 31.12.2025')
+st.sidebar.text('Son yenilənmə: 31.01.2026')
 res_button = st.sidebar.button(':red[🗘 Məlumatları Yenilə]')
 if res_button:
     st.cache_data.clear()
@@ -442,6 +443,7 @@ css_page = """
 
 
 st.markdown(css_page, unsafe_allow_html=True)
+
 
 
 

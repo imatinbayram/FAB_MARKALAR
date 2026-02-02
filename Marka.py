@@ -176,7 +176,7 @@ else:
         placeholder = 'Əlavə məlumatlar',
         label_visibility='collapsed'
     )
-    hesabat_sutunlar.append(hesabat_sutunlar_melumat)
+    hesabat_sutunlar.extend(hesabat_sutunlar_melumat)
     
     if 'ANA_QRUP' in hesabat_sutunlar:
         ana_qrup_list = select_marka_mallar_marka['ANA_QRUP'].unique()
@@ -419,6 +419,7 @@ css_page = """
 
 
 st.markdown(css_page, unsafe_allow_html=True)
+
 
 
 

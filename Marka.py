@@ -110,7 +110,7 @@ res_button = st.sidebar.button(':red[🗘 Məlumatları Yenilə]')
 if res_button:
     st.cache_data.clear()
 with st.spinner('Məlumatlar yüklənir...'):
-    data, markalar_mallar, cariler = load_data()
+    data, markalar_mallar, cariler, segment = load_data()
 
 #Musteri adi ve stok adi drop edirik
 data = data.drop(['C_AD','S_AD'], axis=1)
@@ -422,5 +422,6 @@ css_page = """
 
 
 st.markdown(css_page, unsafe_allow_html=True)
+
 
 

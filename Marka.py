@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from io import BytesIO
+import requests
 
 #Sehifenin nastroykasi
 st.set_page_config(
@@ -95,6 +96,26 @@ SELECT_ALT_QRUP = list()
 SELECT_MAL_QRUP = list()
 SELECT_STOK_QRUP = list()
 
+def sql_segment():
+    query = f"""
+    SELECT [ContragentCode] [C_KOD] ,[Segment] [C_SEGMENT] FROM [BazarlamaHesabatDB].[dbo].[ContragentSegmentView]
+    """
+    url = "http://81.17.83.210:1999/api/Metin/GetQueryTable"
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    html_json = {"Query": query, "Kod": st.secrets["Kod"]}
+
+    response = requests.get(url, json=html_json, headers=headers, verify=False)
+    if response.status_code == 200:
+        api_data = response.json()
+        if api_data["Code"] == 0:
+            return pd.DataFrame(api_data["Data"])
+        else:
+            st.warning(f"API Error (): {api_data['Message']}")
+            return pd.DataFrame()
+    else:
+        st.error(f"HTTP Error (): {response.status_code} {response.text}")
+        return pd.DataFrame()
+
 #Excel melumati oxuyuruq
 @st.cache_data
 def load_data():
@@ -102,7 +123,8 @@ def load_data():
     markalar_mallar = pd.read_excel('MarkalarMallar.xlsx')
     cariler = pd.read_excel('Cariler.xlsx')
     segment = pd.read_excel('Segment.xlsx')
-    return data, markalar_mallar, cariler, segment
+    sql_segment = sql_segment()
+    return data, markalar_mallar, cariler, segment, sql_segment
 
 #Melumat yenilemek ucun knopka
 st.sidebar.text('Son yenilənmə: 31.12.2025')
@@ -110,7 +132,7 @@ res_button = st.sidebar.button(':red[🗘 Məlumatları Yenilə]')
 if res_button:
     st.cache_data.clear()
 with st.spinner('Məlumatlar yüklənir...'):
-    data, markalar_mallar, cariler, segment = load_data()
+    data, markalar_mallar, cariler, segment, sql_segment = load_data()
 
 #Musteri adi ve stok adi drop edirik
 data = data.drop(['C_AD','S_AD'], axis=1)
@@ -254,8 +276,8 @@ SELECT_AYLAR = hesabat_aylar[start_index:end_index + 1]
 #sidebara gore secilen mallarin excelini yaradiqi
 region_marka_merge_data_segment = pd.merge(select_marka_mallar, region_select_data,
                                    left_on='STOK_KOD', right_on='S_KOD', how='left')
-region_marka_merge_data = pd.merge(region_marka_merge_data_segment, segment,
-                                   left_on='C_KOD', right_on='C_KOD', how='left')
+region_marka_merge_data = pd.merge(region_marka_merge_data_segment, sql_segment,
+                                   left_on='C_KOD', right_on='C_KOD', how='left').fillna({'C_SEGMENT': 'D Asagi'})
 
 select_marka_data = region_marka_merge_data[['MARKA','C_KOD']+hesabat_sutunlar+SELECT_AYLAR]
 select_marka_data['CƏMİ'] = select_marka_data[SELECT_AYLAR].sum(axis=1)
@@ -419,6 +441,7 @@ css_page = """
 
 
 st.markdown(css_page, unsafe_allow_html=True)
+
 
 
 

@@ -253,7 +253,7 @@ SELECT_AYLAR = hesabat_aylar[start_index:end_index + 1]
 
 #sidebara gore secilen mallarin excelini yaradiqi
 region_marka_merge_data_segment = pd.merge(select_marka_mallar, region_select_data,
-                                   left_on='STOK_KOD', right_on='S_KOD', how='left')
+                                   left_on='STOK_KOD', right_on='S_KOD', how='inner')
 region_marka_merge_data = pd.merge(region_marka_merge_data_segment, segment,
                                    left_on='C_KOD', right_on='C_KOD', how='left')
 
@@ -419,6 +419,7 @@ css_page = """
 
 
 st.markdown(css_page, unsafe_allow_html=True)
+
 
 
 

@@ -115,6 +115,8 @@ def sql_segment():
     else:
         st.error(f"HTTP Error (): {response.status_code} {response.text}")
         return pd.DataFrame()
+        
+sql_segment = sql_segment()
 
 #Excel melumati oxuyuruq
 @st.cache_data
@@ -123,8 +125,7 @@ def load_data():
     markalar_mallar = pd.read_excel('MarkalarMallar.xlsx')
     cariler = pd.read_excel('Cariler.xlsx')
     segment = pd.read_excel('Segment.xlsx')
-    sql_segment = sql_segment()
-    return data, markalar_mallar, cariler, segment, sql_segment
+    return data, markalar_mallar, cariler, segment
 
 #Melumat yenilemek ucun knopka
 st.sidebar.text('Son yenilənmə: 31.12.2025')
@@ -132,7 +133,7 @@ res_button = st.sidebar.button(':red[🗘 Məlumatları Yenilə]')
 if res_button:
     st.cache_data.clear()
 with st.spinner('Məlumatlar yüklənir...'):
-    data, markalar_mallar, cariler, segment, sql_segment = load_data()
+    data, markalar_mallar, cariler, segment = load_data()
 
 #Musteri adi ve stok adi drop edirik
 data = data.drop(['C_AD','S_AD'], axis=1)
@@ -441,6 +442,7 @@ css_page = """
 
 
 st.markdown(css_page, unsafe_allow_html=True)
+
 
 
 

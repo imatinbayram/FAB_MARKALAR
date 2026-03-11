@@ -99,7 +99,7 @@ SELECT_STOK_QRUP = list()
 
 def sql_segment():
     query = f"""
-    SELECT [ContragentCode] [C_KOD] ,[Segment] [C_SEGMENT] FROM [BazarlamaHesabatDB].[dbo].[ContragentSegmentView]
+    SELECT [ContragentCode] [C_KOD] ,[ContragentMainContragentSegment] [C_SEGMENT] FROM [BazarlamaHesabatDB].[dbo].[ContragentSegmentView]
     """
     url = "http://81.17.83.210:1999/api/Metin/GetQueryTable"
     headers = {"Content-Type": "application/json", "Accept": "application/json"}

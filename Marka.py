@@ -284,10 +284,10 @@ region_marka_merge_data = pd.merge(region_marka_merge_data_segment, sql_segment,
 select_marka_data = region_marka_merge_data[['MARKA','C_KOD']+hesabat_sutunlar+SELECT_AYLAR]
 select_marka_data['CƏMİ'] = select_marka_data[SELECT_AYLAR].sum(axis=1)
 SELECT_AYLAR = SELECT_AYLAR + ['CƏMİ']
-select_marka_data[SELECT_AYLAR] = select_marka_data[SELECT_AYLAR].applymap(lambda x: np.nan if pd.isna(x) or x <= 0 else x)
+select_marka_data[SELECT_AYLAR] = select_marka_data[SELECT_AYLAR].map(lambda x: np.nan if pd.isna(x) or x <= 0 else x)
 select_marka_data_sum = select_marka_data.groupby(['MARKA','C_KOD']+hesabat_sutunlar, as_index=False, dropna=False)[SELECT_AYLAR].count()
 select_marka_data_sum_mebleg = select_marka_data.groupby(['MARKA','C_KOD']+hesabat_sutunlar, as_index=False, dropna=False)[SELECT_AYLAR].sum()
-select_marka_data_sum[SELECT_AYLAR] = select_marka_data_sum[SELECT_AYLAR].applymap(lambda x: np.nan if pd.isna(x) or x <= 0 else x)
+select_marka_data_sum[SELECT_AYLAR] = select_marka_data_sum[SELECT_AYLAR].map(lambda x: np.nan if pd.isna(x) or x <= 0 else x)
 select_marka_data_count = select_marka_data_sum.groupby(['MARKA']+hesabat_sutunlar, as_index=False, dropna=False)[SELECT_AYLAR].count()
 select_marka_data_count_mebleg = select_marka_data_sum_mebleg.groupby(['MARKA']+hesabat_sutunlar, as_index=False, dropna=False)[SELECT_AYLAR].sum()
 

@@ -103,7 +103,7 @@ def sql_segment():
     """
     url = "http://81.17.83.210:1999/api/Metin/GetQueryTable"
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
-    html_json = {"Query": query, "Kod": st.secrets["Kod"]}
+    html_json = {"Query": query, "Kod": "QVERTY"}
 
     response = requests.get(url, json=html_json, headers=headers, verify=False)
     if response.status_code == 200:

@@ -377,14 +377,14 @@ def color_cells(val):
     else:  # Yuksek
         return f'background-color: rgba(128,0,0, {norm_val})'  # Yuksek
 
-styled_hesabat_table = styled_hesabat_table.applymap(color_cells, subset=numeric_columns)
+styled_hesabat_table = styled_hesabat_table.map(color_cells, subset=numeric_columns)
 
 # CEMİ sutununu qirmizi reng elemek
 def highlight_sum_col(val, col_name):
     if col_name == 'CƏMİ':
         return 'background-color: #990000'
     return ''
-styled_hesabat_table = styled_hesabat_table.applymap(lambda x: highlight_sum_col(x, 'CƏMİ'), subset=['CƏMİ'])
+styled_hesabat_table = styled_hesabat_table.map(lambda x: highlight_sum_col(x, 'CƏMİ'), subset=['CƏMİ'])
 
 #Error mesajin qarsisini aliriq
 try:
